@@ -1,0 +1,205 @@
+* {
+    /* `otf-font-awesome` is required to be installed for icons */
+    font-family: "JetBrainsMono Nerd Font ";
+    font-size: 11px;
+    font-weight: bold;    
+}
+
+window#waybar {
+ /*   border-bottom: 3px solid rgba(100, 114, 125, 0.5); */
+    color: #ffffff;
+    background-color: #1e1d1c;
+ /*   border: 2px white solid;*/
+}
+
+window#waybar.hidden {
+    opacity: 0.2;
+    background-color: #1e1d1c;
+
+}
+
+/*
+window#waybar.empty {
+    background-color: #1e1d1c
+}
+
+window#waybar.solo {
+    background-color: #1e1d1c
+}
+*/
+
+window#waybar.termite {
+    background-color: #1e1d1c;
+}
+
+window#waybar.chromium {
+    background-color: #1e1d1c;
+    border: none;
+}
+
+/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+
+/* you can set a style on hover for any module like this */
+#pulseaudio:hover {
+    background-color: #1e1d1c;
+}
+
+#workspaces {
+
+}
+
+#workspaces button {
+    padding: 0px 2px;
+    color: white;
+    border-radius: 0;
+}
+
+#workspaces button.active {
+    /*border-bottom: 2px solid white;*/
+    background-color: #302f2e;
+    border-radius: 5px;
+
+}
+
+
+#workspaces button:hover {
+    /*border-bottom: 2px solid white;*/
+    background-color: #302f2e;
+    border-radius: 30px;
+
+}
+
+
+#workspaces button label {
+	
+
+}
+
+#workspaces button.urgent {
+    background-color: #302f2e;
+    color: #9e513a;
+
+
+}
+
+.modules-right {
+	margin-right: 15px;
+}
+
+.modules-left {
+	margin-left: 5px;
+
+}
+
+
+#clock,
+#battery,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#backlight,
+#network,
+#pulseaudio,
+#wireplumber,
+#tray,
+#custom-separator,
+#window,
+
+#custom-notifications {
+    
+}
+
+#clock {
+    margin-right: 5px;
+    background-color: #1e1d1c;
+    font-weight: bold;  
+}
+
+#clock.calendar {
+    font-size: 20px;
+}
+
+#battery {
+    margin-right: 12px;
+    background-color: #1e1d1c;
+}
+
+#battery.charging, #battery.plugged {
+	margin-right: 12px;
+}
+
+@keyframes blink {
+    to {
+        background-color: #ffffff;
+        color: #000000;
+    }
+}
+
+/* Using steps() instead of linear as a timing function to limit cpu usage */
+#battery.critical:not(.charging) {
+    background-color: #f53c3c;
+    color: #ffffff;
+    margin-left: 12px;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: steps(12);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+label:focus {
+    background-color: #000000;
+}
+
+#cpu {
+    background-color: #1e1d1c;
+    margin-right: 5px;
+}
+
+#memory {
+    background-color: #1e1d1c;
+}
+
+
+#pulseaudio {
+    background-color: #1e1d1c;
+}
+
+#pulseaudio.muted {
+    background-color: #1e1d1c;
+}
+
+#wireplumber {
+}
+
+#wireplumber.muted {
+}
+
+
+#temperature {
+    background-color: #1e1d1c;
+}
+
+#temperature.critical {
+    background-color: #1e1d1c;	
+}
+
+#tray {
+ 
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: #eb4d4b;
+}
+
+
+
+
+
+
