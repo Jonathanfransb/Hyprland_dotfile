@@ -1,0 +1,4 @@
+[server]
+keyboard_backlight = false
+max_volume = 150
+show_percentage = true
