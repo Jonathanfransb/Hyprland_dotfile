@@ -19,8 +19,10 @@ case $ROFI in
 		cliphist wipe
 		;;
 	$REMOVE)
-		ITEM=$(cliphist list | rofi -dmenu -display-columns 2)
-		echo "$ITEM" | cliphist delete 
-		if [ "$ITEM" == ""  ]; then exit; else notify-send Clipboard "$ITEM has been removed from clipboard"; fi
+		while true; do
+			ITEM=$(cliphist list | rofi -dmenu -display-columns 2)
+			echo "$ITEM" | cliphist delete 
+			if [ "$ITEM" == ""  ]; then exit; else notify-send -t 5000 Clipboard "$ITEM has been removed from clipboard"; fi
+		done
 		;;
 esac
