@@ -105,10 +105,6 @@ main_menu() {
 			fi
 			FIRSTDIR=0
 done
-
-
-
-
 }
 
 main_menu
