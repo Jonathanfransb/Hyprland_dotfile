@@ -13,6 +13,7 @@ case $ROFI in
 		notify-send -t 5000 "Screen has been captured"
 		;;
 	$COLORPICKER)
+		sleep 0.2
 		hyprpicker --autocopy
 		;;
 	$SNIPPET)

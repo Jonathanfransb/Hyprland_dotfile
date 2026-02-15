@@ -1,58 +1,66 @@
 #!/usr/bin/env bash
 
-IMGPATH="/usr/share/backgrounds/;/home/jonathan/Imagens/"
-WALLPAPERAPP="swaybg"
-WALLPAPERCOMMAND="swaybg -i"
+IMGPATH="/usr/share/backgrounds/;/home/jonathan/Wallpapers/"
+WALLPAPERAPP="awww"
+WALLPAPERCOMMAND="awww img"
+EXTENSIONS="jpg|jpeg|png|gif"
 
-declare -i PATHCOUNT="$(echo $IMGPATH | awk -F ';' '{ print NF }')"
-DIRS=$(	for NUM in $(seq 1 $PATHCOUNT); do
-	echo "$IMGPATH" | awk -v NUMBERAWK="$NUM" -F ";" '{ print $NUMBERAWK }'
-done)
+DIRS=$(	echo "$IMGPATH" | sed -e 's/;/\n/')
 
 FIRSTDIR=1
 
+
+killprocess() {
+	CHECKPROCESS=$(pgrep "$WALLPAPERAPP"$ > /dev/null 2>&1 ; echo $?)
+	if [ $CHECKPROCESS -ne 0  ]; then
+		echo "$WALLPAPERAPP not found"
+	elif [ $CHECKPROCESS -eq 0 ]; then
+		kill $(pgrep "$WALLPAPERAPP"$)
+	fi
+
+
+}
 
 options_menu() {
 			BACKGROUND="Set as background"
 			BACKGROUNDPERSISTENT="Set persistent background"
 			PREVIEW="Preview"
 			GOBACK="Back"
-			ROFISUBMENU=$(echo -e "$BACKGROUND\n$BACKGROUNDPERSISTENT\n$PREVIEW\n$GOBACK" | rofi -dmenu)
+			ROFISUBMENU=$(echo -e "$BACKGROUND\n$PREVIEW\n$GOBACK" | rofi -dmenu)
 			case $ROFISUBMENU in
 				$BACKGROUND)
-					if [ $(pidof $WALLPAPERAPP > /dev/null 2>&1; echo $?) -eq 0 ]; then
-						killall $WALLPAPERAPP
-						$WALLPAPERCOMMAND "$1$2"
-						exit
-					else
-						$WALLPAPERCOMMAND "$1$2"
+					if [[ "$2" =~ $EXTENSIONS ]]; then
+						killprocess
+						$WALLPAPERCOMMAND $1$2
 						exit
 					fi
 					;;
 				$BACKGROUNDPERSISTENT)
 					WALLPAPERSTARTUPCONTENT=$(cat ~/wallpaperstartup)
 
-					if [ $(pidof $WALLPAPERAPP > /dev/null 2>&1; echo $?) -eq 0 ]; then
-						killall $WALLPAPERAPP
+					if [ ! -e ~/wallpaperstartup ]; then
+						echo "" > ~/wallpaperstartup
+						chmod +x ~/wallpaperstartup
 					fi
-
-					if [[ $WALLPAPERSTARTUPCONTENT == *"$WALLPAPERAPP"* ]]; then
-						echo "$WALLPAPERCOMMAND $1$2" > ~/wallpaperstartup
-						$WALLPAPERCOMMAND $1$2
-						exit
-
-					else
+					if [[  "$2" =~ $EXTENSIONS   ]]; then
+						killprocess
 						echo "$WALLPAPERCOMMAND $1$2" > ~/wallpaperstartup
 						$WALLPAPERCOMMAND $1$2
 						exit
 					fi
+
 					;;
 				$PREVIEW)
-					feh --scale-down -g 640x360 "$1$2"
-					options_menu "$CURRENTDIR" "$IMGS"
+					if [[ "$2" =~ jpg|jpeg|png  ]]; then
+						feh --scale-down -g 640x360 $1$2
+						options_menu "$CURRENTDIR" "$WALLPAPER"
+
+					elif [[ "$2" =~ gif ]]; then
+						exit
+					fi
 					;;
 				$GOBACK) 
-					sub_menu_logic
+					main_menu
 					;;
 
 				*)
@@ -66,25 +74,25 @@ options_menu() {
 
 main_menu() {
 		while true; do
-			if [ "$CHECKIMGS" == "" -a "$CHECKSUBDIRECTORIES" == "" -a $FIRSTDIR == 0 ]; then
+			if [ "$CHECKWALLPAPERS" == "" -a "$CHECKSUBDIRECTORIES" == "" -a $FIRSTDIR == 0 ]; then
 				echo "Um erro ocorreu 1"
 				exit
 			fi
 			
 			if [ $FIRSTDIR -eq 1 ]; then
 				ROFI="$(echo "$DIRS" | rofi -dmenu)"
-				CHECKIMGS=$(ls "$ROFI" | awk '/jpeg|jpg|png/ {print}')
+				CHECKWALLPAPERS=$(ls "$ROFI" | awk -v EXTENSIONS="$EXTENSIONS" '$0 ~ EXTENSIONS {print}')
 				CHECKSUBDIRECTORIES="$(ls -d "$ROFI"*/)"
 		      	 	CURRENTSUBDIRECTORIES_NAMES=$(echo "$CHECKSUBDIRECTORIES" | awk -F "/" 'NFN=NF-1 {print $NFN}'| sed -e "s/$/\//")
 				CURRENTDIR="$(echo "$ROFI")"
 			fi
 
 			if [ "$CHECKSUBDIRECTORIES" == "" -a $FIRSTDIR -eq 0 ]; then
-				ROFI="$(echo -e "$CHECKIMGS" | rofi -dmenu -p $CURRENTDIR)"
-			elif [ "$CHECKIMGS" == ""  -a $FIRSTDIR -eq 0 ]; then
+				ROFI="$(echo -e "$CHECKWALLPAPERS" | rofi -dmenu -p $CURRENTDIR)"
+			elif [ "$CHECKWALLPAPERS" == ""  -a $FIRSTDIR -eq 0 ]; then
 				ROFI="$(echo -e "$CURRENTSUBDIRECTORIES_NAMES" | rofi -dmenu)"
-			elif [[ "$CHECKIMGS" != "" && "$CHECKSUBDIRECTORIES" != "" && $FIRSTDIR == 0 ]]; then
-				ROFI="$(echo -e "$CURRENTSUBDIRECTORIES_NAMES\n$CHECKIMGS" | rofi -dmenu)"
+			elif [[ "$CHECKWALLPAPERS" != "" && "$CHECKSUBDIRECTORIES" != "" && $FIRSTDIR == 0 ]]; then
+				ROFI="$(echo -e "$CURRENTSUBDIRECTORIES_NAMES\n$CHECKWALLPAPERS" | rofi -dmenu)"
 			fi
 
 			if [ ! "$ROFI" ]; then
@@ -92,19 +100,26 @@ main_menu() {
 				exit
 			fi
 
-			if [[ "$ROFI" == *jpg* || "$ROFI" == *png* || "$ROFI" == *jpeg* ]]; then
-				IMGS="$(echo $ROFI)"
-				options_menu "$CURRENTDIR" "$IMGS"
+			if [[ "$ROFI" =~ $EXTENSIONS ]]; then
+				echo "$ROFI"
+				WALLPAPER="$(echo "$ROFI")"
+				options_menu "$CURRENTDIR" "$WALLPAPER"
 			fi
 
-			if [[ "$ROFI" != *jpg* && "$ROFI" != *png* && "$ROFI" != *jpeg* && "$ROFI" != "" && $FIRSTDIR == 0 ]]; then
-				CHECKIMGS=$(ls "$CURRENTDIR""$ROFI" | awk '/jpeg|jpg|png/ {print}')
+
+			if [[ ! "$ROFI" =~ $EXTENSIONS  && $FIRSTDIR == 0 ]]; then
+				echo "Rofi:$ROFI"
+				CHECKWALLPAPERS=$(ls "$CURRENTDIR""$ROFI" | awk -v EXTENSIONS="$EXTENSIONS" '$0 ~ EXTENSIONS {print}')
 				CHECKSUBDIRECTORIES="$(ls -d "$CURRENTDIR""$ROFI"*/)"
 				CURRENTDIR="$(echo "$CURRENTDIR""$ROFI")"
 			  	CURRENTSUBDIRECTORIES_NAMES=$(echo "$CHECKSUBDIRECTORIES" | awk -F "/" 'NFN=NF-1 {print $NFN}'| sed -e "s/$/\//")
 			fi
 			FIRSTDIR=0
 done
+
+
+
+
 }
 
 main_menu

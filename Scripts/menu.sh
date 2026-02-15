@@ -2,34 +2,33 @@
 
 ENTRY1="󰵆  Apps"
 ENTRY2="  Bluetooth"
-ENTRY3="󰐥  Power"
-ENTRY4="󰋩  Wallpaper"
-ENTRY5="  Clipboard"
-ENTRY6="󰵝  Capture"
-ENTRY7="  Nightlight"
+ENTRY3="  System"
+ENTRY4="  Themes"
+ENTRY5="󰞅  Emoji"
 
-ROFI=$(echo -e "$ENTRY1\n""$ENTRY2\n""$ENTRY3\n""$ENTRY4\n""$ENTRY5\n""$ENTRY6\n""$ENTRY7" | rofi -dmenu -p Menu ) 
+ROFI=$(echo -e "$ENTRY1\n""$ENTRY2\n""$ENTRY3\n""$ENTRY4\n""$ENTRY5" | rofi -dmenu -p Menu ) 
 
 case $ROFI in
 	$ENTRY1)
-		rofi -show drun -show-icons
+		rofi -show drun -show-icons -theme-str "window {width: 50%;} 
+			inputbar { margin: 3% 0% 0% 15%; padding: 0px;} 
+			listview {columns: 3; dynamic: true; lines: 3;} 
+			element {orientation: vertical; padding: 20px 0px;}
+			element-icon {size: 28;}
+			element.selected { background-color: #2a2a27 ; } 
+			element-text.selected {background-color: #2a2a27;} 
+			element-icon.selected { background-color: #2a2a27;}" 
 		;;
 	$ENTRY2)
 		~/bluetooth.sh
 		;;
 	$ENTRY3)
-		~/power.sh
+		~/system.sh
 		;;
 	$ENTRY4)
-		~/wallpaper.sh
+		~/themes.sh
 		;;
 	$ENTRY5)
-		~/clipboard.sh
-		;;
-	$ENTRY6)
-		~/capture.sh
-		;;
-	$ENTRY7)
-		~/nightlight.sh
+		rofi -show emoji
 		;;
 esac
